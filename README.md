@@ -1,2 +1,4 @@
 # NIDUC
-Iplementation of Go-Back-N ARQ protocol in Python
+Impementation of ARQ protocol in Python
+Interpreter version: 3.9.2
+
