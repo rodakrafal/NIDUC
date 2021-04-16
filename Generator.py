@@ -20,6 +20,3 @@ class Generator:
         for x in range(self._size):
             self.message.append(random.randint(0, 1))
         return self.message
-
-
-

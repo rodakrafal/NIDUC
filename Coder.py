@@ -13,5 +13,3 @@ class Coder:
             self.message.append(0)
         else:
             self.message.append(1)
-
-
