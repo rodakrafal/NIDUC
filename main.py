@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 def createGraph():
-    a = input("Wybierz typ grafu:\n 1 - zestałym rozmiarem ramki \n 2 - zestałym procentem błędu\n")
+    a = input("Wybierz typ grafu:\n 1 - ze stałym rozmiarem ramki \n 2 - ze stałym procentem błędu\n")
     if a == 1:
         size = 20
         arr = []
@@ -69,7 +69,6 @@ def createGraph():
 def main():
     a = int(input("Wybierz typ grafu:\n 1 - zestałym rozmiarem ramki \n 2 - zestałym procentem błędu\n"))
     if a == 1:
-        print("elo")
         size = 20
         arr = []
         size_array = []
