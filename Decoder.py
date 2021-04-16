@@ -25,6 +25,6 @@ class Decoder:
         number_of_ones = self.countNumberOfOnes()
         parity_bit = self.getParityBit()
         if parity_bit == number_of_ones:
-            return bool(1)
+            return 0
         else:
-            return bool(0)
+            return 1
