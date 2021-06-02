@@ -1,7 +1,7 @@
 from Decoder import *
 from Generator import *
 from Coder import *
-from Chanel import *
+from Channel import *
 from Ber import *
 import copy
 import matplotlib.pyplot as plt
@@ -39,7 +39,7 @@ def const_size(size, max_size, percent):
             message.generate()
             coder = Coder(message.message)
             coder.coder()
-            channel = Chanel(coder.message)
+            channel = Channel(coder.message)
             channel.channel(percent)
             decoder = Decoder()
             decoder.message = copy.deepcopy(channel.message)
@@ -86,7 +86,7 @@ def const_percent(size, max_percent):
             message.generate()
             coder = Coder(message.message)
             coder.coder()
-            channel = Chanel(coder.message)
+            channel = Channel(coder.message)
             channel.channel(percent)
             decoder = Decoder()
             decoder.message = copy.deepcopy(channel.message)
@@ -112,48 +112,80 @@ def const_percent(size, max_percent):
     print(percent_array)
     createGraph(percent_array, arr_errors, "Procent zakłóceń", "Liczba znalezionych błędów na 100 prób",
                 percent_array, arr_ber, "Procent zakłóceń", "Wspolczynnik ber",
-                size_array, arr_e, "Rozmiar tablicy", "Współczynnik E")
+                percent_array, arr_e, "Rozmiar tablicy", "Współczynnik E")
 
 
 def main():
-    a = int(input("Wybierz rodzaj arq:\n 1 - Podstatwowy\n 2 - Stop and wait z bitem parzystości\n"))
+    print("-------------------------------- ARQ --------------------------------")
+    a = int(input("Wybierz rodzaj zabezpieczenia kontroli poprawności wysłanego pakietu:\n 1 - Brak zabezpieczenia\n "
+                  "2 - Bit parzystości\n 3 - Cykliczny kod nadmiarowy\n\tWybór: "))
+    frameamount = int(input("Podaj ilośc ramek: "))
+    framecapacity = int(input("Podaj ilośc bitów w ramce: "))
+    messagesize = frameamount * framecapacity
+    percent = int(input("Podaj procent przekłamania: "))
+
     if a == 1:
         graph_type = int(input("Wybierz typ grafu:\n 1 - zestałym rozmiarem ramki \n 2 - zestałym procentem błędu\n"))
         if graph_type == 1:
-            max_size = int(input("Podaj maksymalna długość ramki\n"))
-            size = int(input("Podaj początkowy rozmiar ramki\n"))
-            percent = int(input("Podaj procent zakłamania\n"))
-            const_size(size, max_size, percent)
+            const_size(framecapacity, frameamount, percent)
         if graph_type == 2:
-            size = int(input("Podaj rozmiar ramki\n"))
             max_percent = int(input("Podaj maxymalny procent zakłamania\n"))
-            const_percent(size, max_percent)
-    if a == 2:
-        message = Generator(100)
+            const_percent(framecapacity, max_percent)
+    elif a == 2:
+        message = Generator(messagesize)
         message.generate()
 
         coder = Coder(message.message)
-        coder.createFrames() # coś tu trzeba naprawić z bitami parzystości
+        coder.howManyFrames = frameamount
+        coder.frameLength = framecapacity
+        coder.createFrames(True)
         decoder = Decoder()
-
         i = 0
-        while i < 1:
-            channel = Chanel(coder.sentFrames)
-            channel.frameLength = coder.getFrameLength()
-            channel.howManyFrames = coder.getHowManyFrames()
-            channel.channelForStopAndWait(20)
+        while i < frameamount:
+            channel = Channel(coder.sentFrames)
+            channel.frameLength = framecapacity
+            channel.howManyFrames = frameamount
+            channel.channelParity(percent)
 
             decoder.frameLength = coder.getFrameLength()
             decoder.howManyFrames = coder.getHowManyFrames()
             decoder.message = copy.deepcopy(channel.message[i])
 
-            print(coder.sentFrames)
-            print(channel.message)
-            print(decoder.message)
-            print(decoder.countNumberOfOnes())
-            print(decoder.getParityBit())
-            print(decoder.decode())
             i += 1
+
+        print(coder.sentFrames)
+        print(channel.message)
+        print(decoder.message)
+        print(decoder.countNumberOfOnes())
+        print(decoder.getParityBit())
+        print(decoder.decodeParity())
+    elif a == 3:
+        message = Generator(messagesize)
+        message.generate()
+
+        coder = Coder(message.message)
+        coder.howManyFrames = frameamount
+        coder.frameLength = framecapacity
+        coder.createFrames(False)
+        decoder = Decoder()
+        i = 0
+        while i < frameamount:
+            channel = Channel(coder.sentFrames)
+            channel.frameLength = coder.getFrameLength()
+            channel.howManyFrames = coder.getHowManyFrames()
+            channel.channelCRC(percent)
+
+            decoder.frameLength = coder.getFrameLength()
+            decoder.howManyFrames = coder.getHowManyFrames()
+            decoder.message = copy.deepcopy(channel.message[i])
+
+            i += 1
+
+        print(coder.sentFrames)
+        print(channel.message)
+        print(decoder.message)
+    else:
+        print("\nWybrano błędną opcje, program zakończy działanie.")
 
 
 if __name__ == "__main__":

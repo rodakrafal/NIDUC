@@ -2,7 +2,7 @@ import random
 import copy
 
 
-class Chanel:
+class Channel:
     message = []
     frameLength = 0
     howManyFrames = 0
@@ -22,7 +22,17 @@ class Chanel:
                     self.message[i] = 1
             i += 1
 
-    def channelForStopAndWait(self, p):
+    def channelParity(self, p):
+        for i in range(self.howManyFrames):
+            for j in range(self.frameLength):
+                rand = random.randint(0, 100)
+                if rand < p:
+                    if self.message[i][j] == 1:
+                        self.message[i][j] = 0
+                    else:
+                        self.message[i][j] = 1
+
+    def channelCRC(self, p):
         for i in range(self.howManyFrames):
             for j in range(self.frameLength):
                 rand = random.randint(0, 100)
