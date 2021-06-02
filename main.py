@@ -148,17 +148,21 @@ def main():
             channel.channelParity(percent)
 
             decoder.frameLength = coder.getFrameLength()
-            decoder.howManyFrames = coder.getHowManyFrames()
             decoder.message = copy.deepcopy(channel.message[i])
 
-            i += 1
+            print(coder.sentFrames)
+            print(channel.message)
+            print(decoder.message)
+            print(decoder.countNumberOfOnes())
+            print(decoder.getParityBit())
+            print(decoder.decodeParity())
 
-        print(coder.sentFrames)
-        print(channel.message)
-        print(decoder.message)
-        print(decoder.countNumberOfOnes())
-        print(decoder.getParityBit())
-        print(decoder.decodeParity())
+            if decoder.ack == 0:
+                i += 1
+                decoder.createFrame()
+            print(message.message)
+            print(decoder.receivedFrames)
+
     elif a == 3:
         message = Generator(messagesize)
         message.generate()
