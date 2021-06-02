@@ -8,7 +8,7 @@ class Chanel:
     howManyFrames = 0
 
     def __init__(self, message):
-        self.message = copy.copy(message)
+        self.message = copy.deepcopy(message)
 
     def channel(self, p):
         length = len(self.message)
