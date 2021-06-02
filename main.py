@@ -3,7 +3,6 @@ from Generator import *
 from Coder import *
 from Chanel import *
 from Ber import *
-from Model import *
 import copy
 import matplotlib.pyplot as plt
 
@@ -43,7 +42,7 @@ def const_size(size, max_size, percent):
             channel = Chanel(coder.message)
             channel.channel(percent)
             decoder = Decoder()
-            decoder.message = copy.copy(channel.message)
+            decoder.message = copy.deepcopy(channel.message)
             decoder.size = size
             tmp = decoder.decode()
             if tmp == 1:
@@ -90,7 +89,7 @@ def const_percent(size, max_percent):
             channel = Chanel(coder.message)
             channel.channel(percent)
             decoder = Decoder()
-            decoder.message = copy.copy(channel.message)
+            decoder.message = copy.deepcopy(channel.message)
             decoder.size = size
             tmp = decoder.decode()
             if tmp == 1:
@@ -146,7 +145,7 @@ def main():
 
             decoder.frameLength = coder.getFrameLength()
             decoder.howManyFrames = coder.getHowManyFrames()
-            decoder.message = copy.copy(channel.message[i])
+            decoder.message = copy.deepcopy(channel.message[i])
 
             print(coder.sentFrames)
             print(channel.message)

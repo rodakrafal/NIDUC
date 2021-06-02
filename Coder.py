@@ -8,7 +8,7 @@ class Coder:
     sentFrames = []
 
     def __init__(self, message):
-        self.message = copy.copy(message)
+        self.message = copy.deepcopy(message)
 
     def coder(self):
         z = 0
@@ -21,9 +21,7 @@ class Coder:
             self.message.append(1)
 
     def code_frames(self, frame):
-        sum = 0
-        for j in range(self.frameLength):
-            sum += frame[j]
+        sum = frame.count(1)
         return sum % 2
 
     def createFrames(self):
