@@ -13,8 +13,8 @@ class Generator:
     def set_size(self, size):
         self._size = size
 
-    def get_message(self):
-        return self.message
+    def __getitem__(self, i):
+        return self.message[i]
 
     def generate(self):
         for x in range(self._size):

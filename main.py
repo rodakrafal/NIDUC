@@ -1,130 +1,195 @@
 from Decoder import *
 from Generator import *
 from Coder import *
-from Chanel import *
+from Channel import *
+from Ber import *
+import copy
 import matplotlib.pyplot as plt
 
 
-def createGraph():
-    a = input("Wybierz typ grafu:\n 1 - ze stałym rozmiarem ramki \n 2 - ze stałym procentem błędu\n")
-    if a == 1:
-        size = 20
-        arr = []
-        size_array = []
-        while size < 1000:
-            size_array.append(size)
-            counter = 0
-            count = 0
-            while counter < 100:
-                message = Generator(size)
-                message.generate()
-                coder = Coder(message.message)
-                coder.coder()
-                channel = Chanel(coder.message)
-                channel.channel(5)
-                decoder = Decoder(channel.message)
-                tmp = decoder.decode()
-                if tmp == 1:
-                    count += 1
-                counter += 1
-            arr.append(count)
-            size += 50
-        print(arr)
-        print(size_array)
-        plt.plot(size_array, arr)
-        plt.xlabel("Rozmiar tablicy")
-        plt.ylabel("Liczba znalezionych błędów na 100 prób")
-        plt.show()
-    if a == 2:
-        percent = 0
-        arr = []
-        percent_array = []
-        while percent < 20:
-            percent_array.append(percent)
-            counter = 0
-            count = 0
-            while counter < 100:
-                message = Generator(80)
-                message.generate()
-                coder = Coder(message.message)
-                coder.coder()
-                channel = Chanel(coder.message)
-                channel.channel(percent)
-                decoder = Decoder(channel.message)
-                tmp = decoder.decode()
-                if tmp == 1:
-                    count += 1
-                counter += 1
-            print(percent)
-            arr.append(count)
-            percent += 1
-        print(arr)
-        print(percent_array)
-        plt.plot(percent_array, arr)
-        plt.xlabel("Procent zakłóceń")
-        plt.ylabel("Liczba znalezionych błędów na 100 prób")
-        plt.show()
+def createGraph(par1, par2, textX, textY, par3, par4, textX2, textY2, par5, par6, textX3, textY4):
+    plt.subplot(1, 3, 1)
+    plt.plot(par1, par2)
+    plt.xlabel(textX)
+    plt.ylabel(textY)
+    plt.subplot(1, 3, 2)
+    plt.plot(par3, par4)
+    plt.xlabel(textX2)
+    plt.ylabel(textY2)
+    plt.subplot(1, 3, 3)
+    plt.plot(par5, par6)
+    plt.xlabel(textX3)
+    plt.ylabel(textY4)
+    plt.show()
+
+
+def const_size(size, max_size, percent):
+    arr_errors = []
+    size_array = []
+    arr_ber = []
+    arr_e = []
+    while size <= max_size:
+        size_array.append(size)
+        counter = 0
+        count = 0
+        ber = 0
+        e = 0
+        while counter < 100:
+            message = Generator(size)
+            message.generate()
+            coder = Coder(message.message)
+            coder.coder()
+            channel = Channel(coder.message)
+            channel.channel(percent)
+            decoder = Decoder()
+            decoder.message = copy.deepcopy(channel.message)
+            decoder.size = size
+            tmp = decoder.decode()
+            if tmp == 1:
+                count += 1
+            counter += 1
+            incorrect_bits = compare(message.message, decoder.message)
+            tem = (len(decoder.message) - incorrect_bits) / len(decoder.message)
+            temp = incorrect_bits / len(decoder.message)
+            ber += temp
+            e += tem
+            message.message.clear()
+        arr_errors.append(count)
+        ber /= 100
+        e /= 100
+        arr_ber.append(ber)
+        arr_e.append(e)
+        size += 50
+    print(arr_errors)
+    print(arr_ber)
+    print(arr_e)
+    print(size_array)
+    createGraph(size_array, arr_errors, "Rozmiar tablicy", "Liczba znalezionych błędów na 100 prób",
+                size_array, arr_ber, "Rozmiar tablicy", "Współczynnik BER",
+                size_array, arr_e, "Rozmiar tablicy", "Współczynnik E")
+
+
+def const_percent(size, max_percent):
+    percent = 0
+    arr_errors = []
+    percent_array = []
+    arr_ber = []
+    arr_e = []
+    while percent <= max_percent:
+        percent_array.append(percent)
+        counter = 0
+        count = 0
+        ber = 0
+        e = 0
+        while counter < 100:
+            message = Generator(size)
+            message.generate()
+            coder = Coder(message.message)
+            coder.coder()
+            channel = Channel(coder.message)
+            channel.channel(percent)
+            decoder = Decoder()
+            decoder.message = copy.deepcopy(channel.message)
+            decoder.size = size
+            tmp = decoder.decode()
+            if tmp == 1:
+                count += 1
+            counter += 1
+            incorrect_bits = compare(message.message, decoder.message)
+            tem = (len(decoder.message) - incorrect_bits) / len(decoder.message)
+            temp = incorrect_bits / len(decoder.message)
+            ber += temp
+            e += tem
+            message.message.clear()
+        ber /= 100
+        e /= 100
+        arr_ber.append(ber)
+        arr_errors.append(count)
+        arr_e.append(e)
+        percent += 1
+    print(arr_errors)
+    print(arr_ber)
+    print(percent_array)
+    createGraph(percent_array, arr_errors, "Procent zakłóceń", "Liczba znalezionych błędów na 100 prób",
+                percent_array, arr_ber, "Procent zakłóceń", "Wspolczynnik ber",
+                percent_array, arr_e, "Rozmiar tablicy", "Współczynnik E")
 
 
 def main():
-    a = int(input("Wybierz typ grafu:\n 1 - zestałym rozmiarem ramki \n 2 - zestałym procentem błędu\n"))
+    print("-------------------------------- ARQ --------------------------------")
+    a = int(input("Wybierz rodzaj zabezpieczenia kontroli poprawności wysłanego pakietu:\n 1 - Brak zabezpieczenia\n "
+                  "2 - Bit parzystości\n 3 - Cykliczny kod nadmiarowy\n\tWybór: "))
+    frameamount = int(input("Podaj ilośc ramek: "))
+    framecapacity = int(input("Podaj ilośc bitów w ramce: "))
+    messagesize = frameamount * framecapacity
+    percent = int(input("Podaj procent przekłamania: "))
+
     if a == 1:
-        size = 20
-        arr = []
-        size_array = []
-        while size < 1000:
-            size_array.append(size)
-            counter = 0
-            count = 0
-            while counter < 100:
-                message = Generator(size)
-                message.generate()
-                coder = Coder(message.message)
-                coder.coder()
-                channel = Chanel(coder.message)
-                channel.channel(5)
-                decoder = Decoder(channel.message)
-                tmp = decoder.decode()
-                if tmp == 1:
-                    count += 1
-                counter += 1
-            arr.append(count)
-            size += 50
-        print(arr)
-        print(size_array)
-        plt.plot(size_array, arr)
-        plt.xlabel("Rozmiar tablicy")
-        plt.ylabel("Liczba znalezionych błędów na 100 prób")
-        plt.show()
-    if a == 2:
-        percent = 0
-        arr = []
-        percent_array = []
-        while percent < 20:
-            percent_array.append(percent)
-            counter = 0
-            count = 0
-            while counter < 100:
-                message = Generator(80)
-                message.generate()
-                coder = Coder(message.message)
-                coder.coder()
-                channel = Chanel(coder.message)
-                channel.channel(percent)
-                decoder = Decoder(channel.message)
-                tmp = decoder.decode()
-                if tmp == 1:
-                    count += 1
-                counter += 1
-            print(percent)
-            arr.append(count)
-            percent += 1
-        print(arr)
-        print(percent_array)
-        plt.plot(percent_array, arr)
-        plt.xlabel("Procent zakłóceń")
-        plt.ylabel("Liczba znalezionych błędów na 100 prób")
-        plt.show()
+        graph_type = int(input("Wybierz typ grafu:\n 1 - zestałym rozmiarem ramki \n 2 - zestałym procentem błędu\n"))
+        if graph_type == 1:
+            const_size(framecapacity, frameamount, percent)
+        if graph_type == 2:
+            max_percent = int(input("Podaj maxymalny procent zakłamania\n"))
+            const_percent(framecapacity, max_percent)
+    elif a == 2:
+        message = Generator(messagesize)
+        message.generate()
+
+        coder = Coder(message.message)
+        coder.howManyFrames = frameamount
+        coder.frameLength = framecapacity
+        coder.createFrames(True)
+        decoder = Decoder()
+        i = 0
+        while i < frameamount:
+            channel = Channel(coder.sentFrames)
+            channel.frameLength = framecapacity
+            channel.howManyFrames = frameamount
+            channel.channelParity(percent)
+
+            decoder.frameLength = coder.getFrameLength()
+            decoder.message = copy.deepcopy(channel.message[i])
+
+            print(coder.sentFrames)
+            print(channel.message)
+            print(decoder.message)
+            print(decoder.countNumberOfOnes())
+            print(decoder.getParityBit())
+            print(decoder.decodeParity())
+
+            if decoder.ack == 0:
+                i += 1
+                decoder.createFrame()
+            print(message.message)
+            print(decoder.receivedFrames)
+
+    elif a == 3:
+        message = Generator(messagesize)
+        message.generate()
+
+        coder = Coder(message.message)
+        coder.howManyFrames = frameamount
+        coder.frameLength = framecapacity
+        coder.createFrames(False)
+        decoder = Decoder()
+        i = 0
+        while i < frameamount:
+            channel = Channel(coder.sentFrames)
+            channel.frameLength = coder.getFrameLength()
+            channel.howManyFrames = coder.getHowManyFrames()
+            channel.channelCRC(percent)
+
+            decoder.frameLength = coder.getFrameLength()
+            decoder.howManyFrames = coder.getHowManyFrames()
+            decoder.message = copy.deepcopy(channel.message[i])
+
+            i += 1
+
+        print(coder.sentFrames)
+        print(channel.message)
+        print(decoder.message)
+    else:
+        print("\nWybrano błędną opcje, program zakończy działanie.")
 
 
 if __name__ == "__main__":
