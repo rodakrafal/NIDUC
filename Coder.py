@@ -24,12 +24,13 @@ class Coder:
         sum = frame.count(1)
         return sum % 2
 
-    def createFrames(self):
+    def createFrames(self, isparity):
         for i in range(self.howManyFrames):
             self.sentFrames.append([])
             for j in range(self.frameLength):
                 self.sentFrames[i].append(self.message[i * self.frameLength + j])
-            self.sentFrames[i].append(self.code_frames(self.sentFrames[i])) # coś tu się pierdoli
+            if isparity:
+                self.sentFrames[i].append(self.code_frames(self.sentFrames[i])) # coś tu się pierdoli
 
     def getHowManyFrames(self):
         return self.howManyFrames
