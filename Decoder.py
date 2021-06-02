@@ -4,6 +4,7 @@ import pycrc.algorithms
 
 class Decoder:
     message = []
+    receivedFrames = []
     frameLength = 0
     howManyFrames = 0
     ack = 0
@@ -29,11 +30,16 @@ class Decoder:
         number_of_ones = self.countNumberOfOnes()
         parity_bit = self.getParityBit()
         if parity_bit == number_of_ones:
+            self.ack = 0
             return 0
         else:
+            self.ack = 1
             return 1
 
-    # def createFrame(self, message):
+    def createFrame(self):
+        for j in range(self.frameLength):
+            self.receivedFrames.append(self.message[j])
+        self.howManyFrames += 1
 
     def decodeCRC(self):
         number_of_ones = self.countNumberOfOnes()
