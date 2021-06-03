@@ -149,13 +149,13 @@ def main():
 
             decoder.frameLength = coder.getFrameLength()
             decoder.message = copy.deepcopy(channel.message[i])
+            decoder.decodeParity()
 
             print(coder.sentFrames)
             print(channel.message)
             print(decoder.message)
             print(decoder.countNumberOfOnes())
             print(decoder.getParityBit())
-            print(decoder.decodeParity())
 
             if decoder.ack == 0:
                 i += 1
@@ -175,19 +175,26 @@ def main():
         i = 0
         while i < frameamount:
             channel = Channel(coder.sentFrames)
-            channel.frameLength = coder.getFrameLength()
-            channel.howManyFrames = coder.getHowManyFrames()
+            channel.frameLength = framecapacity
+            channel.howManyFrames = frameamount
             channel.channelCRC(percent)
 
             decoder.frameLength = coder.getFrameLength()
-            decoder.howManyFrames = coder.getHowManyFrames()
             decoder.message = copy.deepcopy(channel.message[i])
+            decoder.decodeCRC()
 
-            i += 1
+            if decoder.ack == 0:
+                i += 1
+                decoder.createFrame()
+
+            # print(message.message)
+            # print(decoder.receivedFrames)
+            # i += 1
 
         print(coder.sentFrames)
         print(channel.message)
-        print(decoder.message)
+        print(message.message)
+        print(decoder.receivedFrames)
     else:
         print("\nWybrano błędną opcje, program zakończy działanie.")
 

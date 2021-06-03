@@ -1,3 +1,4 @@
+from CRC import *
 import copy
 
 
@@ -30,7 +31,17 @@ class Coder:
             for j in range(self.frameLength):
                 self.sentFrames[i].append(self.message[i * self.frameLength + j])
             if isparity:
-                self.sentFrames[i].append(self.code_frames(self.sentFrames[i])) # coś tu się pierdoli
+                self.sentFrames[i].append(self.code_frames(self.sentFrames[i]))
+            else:
+                crc = CRC(self.sentFrames[i])
+                x = int(crc.getCRS(0))
+                y = crc.getCRCbites()
+                temp = [int(digit) for digit in bin(x)[2:]]
+                temptofill = y - len(temp)
+                for z in range(temptofill):
+                    temp.insert(z,0)
+                for z in range(y):
+                    self.sentFrames[i].append(temp[z])
 
     def getHowManyFrames(self):
         return self.howManyFrames

@@ -34,7 +34,7 @@ class Channel:
 
     def channelCRC(self, p):
         for i in range(self.howManyFrames):
-            for j in range(self.frameLength):
+            for j in range(len(self.message[i])):
                 rand = random.randint(0, 100)
                 if rand < p:
                     if self.message[i][j] == 1:
