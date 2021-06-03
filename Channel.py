@@ -25,7 +25,7 @@ class Channel:
     def channelParity(self, p):
         for i in range(self.howManyFrames):
             for j in range(self.frameLength+1):
-                rand = random.randint(0, 100)
+                rand = random.randint(0, 99)
                 if rand < p:
                     if self.message[i][j] == 1:
                         self.message[i][j] = 0
