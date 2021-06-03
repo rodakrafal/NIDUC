@@ -28,9 +28,9 @@ class CRC:
 
         if choice == 2:
             self.bitsamount = 64
-            crc = pycrc.algorithms.Crc(width=64, poly=0x04C11DB7,
-                                       reflect_in=True, xor_in=0xFFFFFFFF,
-                                       reflect_out=True, xor_out=0xFFFFFFFF)
+            crc = pycrc.algorithms.Crc(width=64, poly=0x000000000000001b,
+                                       reflect_in=True, xor_in=0x0000000000000000,
+                                       reflect_out=True, xor_out=0x0000000000000000)
 
         z = len(self.message)
         sum = 0

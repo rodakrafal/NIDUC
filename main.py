@@ -117,7 +117,7 @@ def const_percent(size, max_percent):
 
 def main():
     print("-------------------------------- ARQ --------------------------------")
-    a = int(input("Wybierz rodzaj zabezpieczenia kontroli poprawności wysłanego pakietu:\n 1 - Brak zabezpieczenia\n "
+    a = int(input("Wybierz rodzaj zabezpieczenia kontroli poprawności wysłanego pakietu:\n 1 - Brak zabezpieczenia*\n "
                   "2 - Bit parzystości\n 3 - Cykliczny kod nadmiarowy\n\tWybór: "))
     frameamount = int(input("Podaj ilośc ramek: "))
     framecapacity = int(input("Podaj ilośc bitów w ramce: "))
@@ -127,10 +127,41 @@ def main():
     if a == 1:
         graph_type = int(input("Wybierz typ grafu:\n 1 - zestałym rozmiarem ramki \n 2 - zestałym procentem błędu\n"))
         if graph_type == 1:
-            const_size(framecapacity, frameamount, percent)
+            print("na razie nic")
         if graph_type == 2:
             max_percent = int(input("Podaj maxymalny procent zakłamania\n"))
-            const_percent(framecapacity, max_percent)
+
+
+        message = Generator(messagesize)
+        message.generate()
+
+        coder = Coder(message.message)
+        coder.howManyFrames = frameamount
+        coder.frameLength = framecapacity
+        coder.createFrames(True, 0)
+        decoder = Decoder()
+        i = 0
+        while i < frameamount:
+            channel = Channel(coder.sentFrames)
+            channel.frameLength = framecapacity
+            channel.howManyFrames = frameamount
+            channel.channelParity(percent)
+
+            decoder.frameLength = coder.getFrameLength()
+            decoder.message = copy.deepcopy(channel.message[i])
+            decoder.decodeParity()
+
+            # print(coder.sentFrames)
+            # print(channel.message)
+            # print(decoder.message)
+            # print(decoder.countNumberOfOnes())
+            # print(decoder.getParityBit())
+
+            decoder.createFrame()
+            i += 1
+
+        print(message.message)
+        print(decoder.receivedFrames)
     elif a == 2:
         message = Generator(messagesize)
         message.generate()
@@ -138,7 +169,7 @@ def main():
         coder = Coder(message.message)
         coder.howManyFrames = frameamount
         coder.frameLength = framecapacity
-        coder.createFrames(True)
+        coder.createFrames(True, 0)
         decoder = Decoder()
         i = 0
         while i < frameamount:
@@ -164,13 +195,15 @@ def main():
             print(decoder.receivedFrames)
 
     elif a == 3:
+        choice = int(input("Podaj który kod CRC chcesz wybrać (0-3): "))
+
         message = Generator(messagesize)
         message.generate()
 
         coder = Coder(message.message)
         coder.howManyFrames = frameamount
         coder.frameLength = framecapacity
-        coder.createFrames(False)
+        coder.createFrames(False, choice)
         decoder = Decoder()
         i = 0
         while i < frameamount:
@@ -181,7 +214,7 @@ def main():
 
             decoder.frameLength = coder.getFrameLength()
             decoder.message = copy.deepcopy(channel.message[i])
-            decoder.decodeCRC()
+            decoder.decodeCRC(choice)
 
             if decoder.ack == 0:
                 i += 1

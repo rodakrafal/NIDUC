@@ -40,10 +40,10 @@ class Decoder:
             self.receivedFrames.append(self.message[j])
         self.howManyFrames += 1
 
-    def decodeCRC(self):
+    def decodeCRC(self, choice):
         crc = CRC(self.message[:self.frameLength])
         # print(self.message)
-        x = int(crc.getCRS(0))
+        x = int(crc.getCRS(choice))
         y = crc.getCRCbites()
         temp = [int(digit) for digit in bin(x)[2:]]
         temptofill = y - len(temp)

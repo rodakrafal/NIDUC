@@ -25,7 +25,7 @@ class Coder:
         sum = frame.count(1)
         return sum % 2
 
-    def createFrames(self, isparity):
+    def createFrames(self, isparity, choice):
         for i in range(self.howManyFrames):
             self.sentFrames.append([])
             for j in range(self.frameLength):
@@ -34,7 +34,7 @@ class Coder:
                 self.sentFrames[i].append(self.code_frames(self.sentFrames[i]))
             else:
                 crc = CRC(self.sentFrames[i])
-                x = int(crc.getCRS(0))
+                x = int(crc.getCRS(choice))
                 y = crc.getCRCbites()
                 temp = [int(digit) for digit in bin(x)[2:]]
                 temptofill = y - len(temp)
