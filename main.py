@@ -26,6 +26,33 @@ def createGraph2(par1, par2, textX, textY, par3, par4, par5, par6, label1, label
     plt.show()
 
 
+def createGraphPareto(ber, e, ber1, e1, ber2, e2, ber3, e3, ber4, e4, textX, textY, label1, label2, label3, label4, label5, title):
+    print("\n")
+    print(ber)
+    print(ber1)
+    print(ber2)
+    print(ber3)
+    print(ber4)
+    print(e)
+    print(e1)
+    print(e2)
+    print(e3)
+    print(e4)
+    plt.plot(1, 0, "ro", label="Sytuacja idealna", color="orange")
+    plt.plot(e, ber, "ro", label=label1, colour="red")
+    plt.plot(e1, ber1, "ro", label=label2, colouur="blue")
+    plt.plot(e2, ber2, "ro", label=label3, color="green")
+    plt.plot(e3, ber3, "ro", label=label4, colour="yellow")
+    plt.plot(e4, ber4, "ro", label=label5, colour="black")
+    plt.title(title)
+    plt.xlim(-0.1, 1.1)
+    plt.ylim(-0.1, 1.1)
+    plt.xlabel(textX)
+    plt.ylabel(textY)
+    plt.legend()
+    plt.show()
+
+
 def const_size(max_size, percent, frameamount, framecapacity, enlarging):
     errors = []
     sizeFrame = []
@@ -116,6 +143,89 @@ def const_percent(max_percent, percent, frameamount, framecapacity, enlarging):
     print(errors)
     print(percentArray)
     createGraph(percentArray, errors, "Procent przekłamania", "Liczba wykrytych błędów")
+
+
+def parity_bit_pareto(percent, messagesize, frameamount, framecapacity, ber, e):
+    j = 0
+    while j < 10:
+        message = Generator(messagesize)
+        message.generate()
+
+        coder = Coder(message.message)
+        coder.howManyFrames = frameamount
+        coder.frameLength = framecapacity
+        coder.createFrames(True, 0)
+        decoder = Decoder()
+        i = 0
+        while i < frameamount:
+            channel = Channel(coder.sentFrames)
+            channel.frameLength = framecapacity
+            channel.howManyFrames = frameamount
+            channel.channelParity(percent)
+
+            decoder.frameLength = coder.getFrameLength()
+            decoder.message = copy.deepcopy(channel.message[i])
+            decoder.decodeParity()
+
+            if decoder.ack == 0:
+                i += 1
+                decoder.createFrame()
+        j += 1
+        incorrectFrames = compare(message.message, decoder.receivedFrames)
+        ber += incorrectFrames / len(decoder.receivedFrames)
+        e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0]) * frameamount))
+        message.message.clear()
+        coder.message.clear()
+        coder.sentFrames.clear()
+        channel.message.clear()
+        decoder.message.clear()
+        decoder.receivedFrames.clear()
+    ber /= j
+    e /= j
+    return [ber, e]
+
+
+def CRC_pareto(choice, percent, messagesize, frameamount, framecapacity, ber, e):
+    j = 0
+    while j < 1:
+
+        message = Generator(messagesize)
+        message.generate()
+
+        coder = Coder(message.message)
+        coder.howManyFrames = frameamount
+        coder.frameLength = framecapacity
+        coder.createFrames(False, choice)
+        decoder = Decoder()
+        i = 0
+        while i < frameamount:
+            channel = Channel(coder.sentFrames)
+            channel.frameLength = framecapacity
+            channel.howManyFrames = frameamount
+            channel.channelCRC(percent)
+
+            decoder.frameLength = coder.getFrameLength()
+            decoder.message = copy.deepcopy(channel.message[i])
+            decoder.decodeCRC(choice)
+
+            if decoder.ack == 0:
+                i += 1
+                decoder.createFrame()
+        j += 1
+        incorrectFrames = compare(message.message, decoder.receivedFrames)
+        ber += incorrectFrames / len(decoder.receivedFrames)
+        e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0]) * frameamount))
+        message.message.clear()
+        coder.message.clear()
+        coder.sentFrames.clear()
+        channel.message.clear()
+        decoder.message.clear()
+        decoder.receivedFrames.clear()
+    ber /= j
+    e /= j
+    print(choice)
+    return [ber, e]
+
 
 
 def ber_parity_bits_const_percent(max_size, percent, frameamount, framecapacity, enlarging):
@@ -561,11 +671,12 @@ def CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarg
 def main():
     print("-------------------------------- ARQ --------------------------------")
     a = int(input("Wybierz rodzaj zabezpieczenia kontroli poprawności wysłanego pakietu:\n 1 - Brak zabezpieczenia*\n "
-                  "2 - Bit parzystości\n 3 - Cykliczny kod nadmiarowy\n\tWybór: "))
-    frameamount = int(input("Podaj ilośc ramek: "))
-    framecapacity = int(input("Podaj ilośc bitów w ramce: "))
-    messagesize = frameamount * framecapacity
-    percent = int(input("Podaj procent przekłamania: "))
+                  "2 - Bit parzystości\n 3 - Cykliczny kod nadmiarowy\n 4 - Porównanie kodów\n 5 - Zbiór Pareto\n\tWybór: "))
+    if a != 5:
+        frameamount = int(input("Podaj ilośc ramek: "))
+        framecapacity = int(input("Podaj ilośc bitów w ramce: "))
+        messagesize = frameamount * framecapacity
+        percent = int(input("Podaj procent przekłamania: "))
 
     if a == 1:
         graph_type = int(input("Wybierz typ grafu:\n 1 - zestałym procentem błędu \n 2 - zestałym rozmiarem ramki\n"))
@@ -587,7 +698,6 @@ def main():
             max_percent = int(input("Podaj maxymalny procent zakłamania\n"))
             enlarging = int(input("Podaj o ile procent bedziemy zwikszać przekłamanie\n"))
             ber_parity_bits_const_size(max_percent, percent, frameamount, framecapacity, enlarging)
-
     elif a == 3:
         graph_type = int(input("Wybierz typ grafu:\n 1 - zestałym procentem błędu \n 2 - zestałym rozmiarem ramki\n"))
         if graph_type == 1:
@@ -600,7 +710,6 @@ def main():
             max_percent = int(input("Podaj maxymalny procent zakłamania\n"))
             enlarging = int(input("Podaj o ile procent bedziemy zwikszać przekłamanie\n"))
             CRC_BER_const_size(max_percent, percent, frameamount, framecapacity, enlarging, choice)
-
     elif a == 4:
         graph_type = int(input("Wybierz typ grafu:\n 1 - zestałym procentem błędu \n 2 - zestałym rozmiarem ramki\n"))
         if graph_type == 1:
@@ -665,33 +774,38 @@ def main():
             createGraph2(percentArray, eArray, "Procent przekłamania", "Wskaźnik E", eArray1, eArray2, eArray3, eArray4, "Bit parzystości",
                          "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
     elif a == 5:
-        message = Generator(messagesize)
-        message.generate()
-
-        coder = Coder(message.message)
-        coder.howManyFrames = frameamount
-        coder.frameLength = framecapacity
-        coder.createFrames(True, 0)
-        decoder = Decoder()
-        i = 0
-        while i < frameamount:
-            channel = Channel(coder.sentFrames)
-            channel.frameLength = framecapacity
-            channel.howManyFrames = frameamount
-            channel.channelParity(percent)
-
-            decoder.frameLength = coder.getFrameLength()
-            decoder.message = copy.deepcopy(channel.message[i])
-            decoder.decodeParity()
-
-            if decoder.ack == 0:
-                i += 1
-                decoder.createFrame()
-        print(message.message)
-        print(len(message.message))
-        print(coder.sentFrames)
-        print(len(coder.sentFrames[0])*frameamount)
-        print(decoder.receivedFrames)
+        frameamount = 1
+        framecapacity = int(input("Podaj ilośc bitów w ramce: "))
+        messagesize = frameamount * framecapacity
+        percent = int(input("Podaj procent przekłamania: "))
+        ber = 0
+        e = 0
+        ber1 = 0
+        e1 = 0
+        ber2 = 0
+        e2 = 0
+        ber3 = 0
+        e3 = 0
+        ber4 = 0
+        e4 = 0
+        temp = parity_bit_pareto(percent, messagesize, frameamount, framecapacity, ber, e)
+        ber = temp[0]
+        e = temp[1]
+        temp = CRC_pareto(0,  percent, messagesize, frameamount, framecapacity, ber1, e1)
+        ber1 = temp[0]
+        e1 = temp[1]
+        temp = CRC_pareto(1, percent, messagesize, frameamount, framecapacity, ber2, e2)
+        ber2 = temp[0]
+        e2 = temp[1]
+        temp = CRC_pareto(2, percent, messagesize, frameamount, framecapacity, ber3, e3)
+        ber3 = temp[0]
+        e3 = temp[1]
+        temp = CRC_pareto(3, percent, messagesize, frameamount, framecapacity, ber4, e4)
+        ber4 = temp[0]
+        e4 = temp[1]
+        createGraphPareto(ber, e, ber1, e1, ber2, e2, ber3, e3, ber4, e4, "Wskaźnik E", "Wskaźnik BER", "Bit parzystości",
+                         "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit", "Wykres BER/E dla różnych kodowań\n Procent przekłamania p = " + str(percent) + "\n "
+                                                                                "Rozmiar ramki = " + str(framecapacity))
     else:
         print("\nWybrano błędną opcje, program zakończy działanie.")
 
