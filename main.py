@@ -14,9 +14,12 @@ def createGraph(par1, par2, textX, textY):
     plt.show()
 
 
-def createGraph2(par1, par2, textX, textY, par3, label1, label2):
+def createGraph2(par1, par2, textX, textY, par3, par4, par5, par6, label1, label2, label3, label4, label5):
     plt.plot(par1, par2, label = label1)
     plt.plot(par1, par3, label = label2)
+    plt.plot(par1, par4, label=label3)
+    plt.plot(par1, par5, label=label4)
+    plt.plot(par1, par6, label=label5)
     plt.xlabel(textX)
     plt.ylabel(textY)
     plt.legend()
@@ -149,7 +152,7 @@ def ber_parity_bits_const_percent(max_size, percent, frameamount, framecapacity,
                     decoder.createFrame()
             incorrectFrames = compare(message.message, decoder.receivedFrames)
             ber += incorrectFrames / len(decoder.receivedFrames)
-            e += ((len(decoder.receivedFrames) - incorrectFrames) / len(coder.sentFrames))
+            e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0])*frameamount))
             message.message.clear()
             coder.message.clear()
             coder.sentFrames.clear()
@@ -204,7 +207,7 @@ def ber_parity_bits_const_percent2(max_size, percent, frameamount, framecapacity
                     decoder.createFrame()
             incorrectFrames = compare(message.message, decoder.receivedFrames)
             ber += incorrectFrames / len(decoder.receivedFrames)
-            e += ((len(decoder.receivedFrames) - incorrectFrames) / len(coder.sentFrames))
+            e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0])*frameamount))
             message.message.clear()
             coder.message.clear()
             coder.sentFrames.clear()
@@ -259,7 +262,7 @@ def ber_parity_bits_const_size(max_percent, percent, frameamount, framecapacity,
                     decoder.createFrame()
             incorrectFrames = compare(message.message, decoder.receivedFrames)
             ber += incorrectFrames / len(decoder.receivedFrames)
-            e += ((len(decoder.receivedFrames) - incorrectFrames) / len(coder.sentFrames))
+            e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0])*frameamount))
             message.message.clear()
             coder.message.clear()
             coder.sentFrames.clear()
@@ -314,7 +317,7 @@ def ber_parity_bits_const_size2(max_percent, percent, frameamount, framecapacity
                     decoder.createFrame()
             incorrectFrames = compare(message.message, decoder.receivedFrames)
             ber += incorrectFrames / len(decoder.receivedFrames)
-            e += ((len(decoder.receivedFrames) - incorrectFrames) / len(coder.sentFrames))
+            e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0])*frameamount))
             message.message.clear()
             coder.message.clear()
             coder.sentFrames.clear()
@@ -369,7 +372,7 @@ def CRC_BER_const_percent(max_size, percent, frameamount, framecapacity, enlargi
                     decoder.createFrame()
             incorrectFrames = compare(message.message, decoder.receivedFrames)
             ber += incorrectFrames / len(decoder.receivedFrames)
-            e += ((len(decoder.receivedFrames) - incorrectFrames) / len(coder.sentFrames))
+            e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0])*frameamount))
             message.message.clear()
             coder.message.clear()
             coder.sentFrames.clear()
@@ -424,7 +427,7 @@ def CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarg
                     decoder.createFrame()
             incorrectFrames = compare(message.message, decoder.receivedFrames)
             ber += incorrectFrames / len(decoder.receivedFrames)
-            e += ((len(decoder.receivedFrames) - incorrectFrames) / len(coder.sentFrames))
+            e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0])*frameamount))
             message.message.clear()
             coder.message.clear()
             coder.sentFrames.clear()
@@ -479,7 +482,7 @@ def CRC_BER_const_size(max_percent, percent, frameamount, framecapacity, enlargi
                     decoder.createFrame()
             incorrectFrames = compare(message.message, decoder.receivedFrames)
             ber += incorrectFrames / len(decoder.receivedFrames)
-            e += ((len(decoder.receivedFrames) - incorrectFrames) / len(channel.message))
+            e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0])*frameamount))
             message.message.clear()
             coder.message.clear()
             coder.sentFrames.clear()
@@ -534,7 +537,7 @@ def CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarg
                     decoder.createFrame()
             incorrectFrames = compare(message.message, decoder.receivedFrames)
             ber += incorrectFrames / len(decoder.receivedFrames)
-            e += ((len(decoder.receivedFrames) - incorrectFrames) / len(channel.message))
+            e += ((len(decoder.receivedFrames) - incorrectFrames) / (len(coder.sentFrames[0])*frameamount))
             message.message.clear()
             coder.message.clear()
             coder.sentFrames.clear()
@@ -579,7 +582,7 @@ def main():
         if graph_type == 1:
             max_size = int(input("Podaj maxymalny rozmiar ramki\n"))
             enlarging = int(input("Podaj o ile bedziemy zwikszać ramke\n"))
-        ber_parity_bits_const_percent(max_size, percent, frameamount, framecapacity, enlarging)
+            ber_parity_bits_const_percent(max_size, percent, frameamount, framecapacity, enlarging)
         if graph_type == 2:
             max_percent = int(input("Podaj maxymalny procent zakłamania\n"))
             enlarging = int(input("Podaj o ile procent bedziemy zwikszać przekłamanie\n"))
@@ -610,14 +613,26 @@ def main():
             sizeFrame1 = []
             eArray1 = []
             berArray1 = []
+            eArray2 = []
+            berArray2 = []
+            eArray3 = []
+            berArray3 = []
+            eArray4 = []
+            berArray4 = []
             ber_parity_bits_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, sizeFrame,
                                        eArray, berArray, True)
-            CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, choice, sizeFrame1,
+            CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, 0, sizeFrame1,
                                eArray1, berArray1, True)
-            createGraph2(sizeFrame, berArray, "Procent przekłamania", "Wskaźnik E", berArray1, "Bit parzystości",
-                         "CRC")
-            createGraph2(sizeFrame, eArray, "Procent przekłamania", "Wskaźnik E", eArray1, "Bit parzystości",
-                         "CRC")
+            CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, 1, sizeFrame1,
+                                   eArray2, berArray2, True)
+            CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, 2, sizeFrame1,
+                                   eArray3, berArray3, True)
+            CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, 3, sizeFrame1,
+                                   eArray4, berArray4, True)
+            createGraph2(sizeFrame, berArray, "Rozmiar ramki", "Wskaźnik BER", berArray1, berArray2, berArray3, berArray4, "Bit parzystości",
+                         "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
+            createGraph2(sizeFrame, eArray, "Rozmiar ramki", "Wskaźnik E", eArray1, eArray2, eArray3, eArray4, "Bit parzystości",
+                         "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
         if graph_type == 2:
             choice = int(input("Podaj który kod CRC chcesz wybrać (0-3): "))
             max_percent = int(input("Podaj maxymalny procent zakłamania\n"))
@@ -628,13 +643,55 @@ def main():
             percentArray1 = []
             eArray1 = []
             berArray1 = []
+            eArray2 = []
+            berArray2 = []
+            eArray3 = []
+            berArray3 = []
+            eArray4 = []
+            berArray4 = []
             ber_parity_bits_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, percentArray,
                                        eArray, berArray, True)
-            CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, choice, percentArray1,
+            CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, 0, percentArray1,
                                eArray1, berArray1, True)
-            createGraph2(percentArray, berArray, "Procent przekłamania", "Wskaźnik E", berArray1, "Bit parzystości", "CRC")
-            createGraph2(percentArray, eArray, "Procent przekłamania", "Wskaźnik E", eArray1, "Bit parzystości",
-                         "CRC")
+            CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, 1, percentArray1,
+                                eArray2, berArray2, True)
+            CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, 2, percentArray1,
+                                eArray3, berArray3, True)
+            CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, 3, percentArray1,
+                                eArray4, berArray4, True)
+
+            createGraph2(percentArray, berArray, "Procent przekłamania", "Wskaźnik BER", berArray1, berArray2, berArray3, berArray4,
+                         "Bit parzystości", "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
+            createGraph2(percentArray, eArray, "Procent przekłamania", "Wskaźnik E", eArray1, eArray2, eArray3, eArray4, "Bit parzystości",
+                         "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
+    elif a == 5:
+        message = Generator(messagesize)
+        message.generate()
+
+        coder = Coder(message.message)
+        coder.howManyFrames = frameamount
+        coder.frameLength = framecapacity
+        coder.createFrames(True, 0)
+        decoder = Decoder()
+        i = 0
+        while i < frameamount:
+            channel = Channel(coder.sentFrames)
+            channel.frameLength = framecapacity
+            channel.howManyFrames = frameamount
+            channel.channelParity(percent)
+
+            decoder.frameLength = coder.getFrameLength()
+            decoder.message = copy.deepcopy(channel.message[i])
+            decoder.decodeParity()
+
+            if decoder.ack == 0:
+                i += 1
+                decoder.createFrame()
+        print(message.message)
+        print(len(message.message))
+        print(coder.sentFrames)
+        print(len(coder.sentFrames[0])*frameamount)
+        print(decoder.receivedFrames)
     else:
         print("\nWybrano błędną opcje, program zakończy działanie.")
 

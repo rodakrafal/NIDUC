@@ -26,7 +26,7 @@ class CRC:
                                        reflect_out=True, xor_out=0xFFFFFFFF)
             self.bitsamount = 32
 
-        if choice == 2:
+        if choice == 3:
             self.bitsamount = 64
             crc = pycrc.algorithms.Crc(width=64, poly=0x000000000000001b,
                                        reflect_in=True, xor_in=0x0000000000000000,
