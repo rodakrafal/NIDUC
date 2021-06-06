@@ -26,7 +26,9 @@ def createGraph2(par1, par2, textX, textY, par3, par4, par5, par6, label1, label
     plt.show()
 
 
-def createGraphPareto(ber, e, ber1, e1, ber2, e2, ber3, e3, ber4, e4, textX, textY, label1, label2, label3, label4, label5, title):
+def createGraphPareto(ber, e, ber1, e1, ber2, e2, ber3, e3, ber4, e4, ber5, e5, ber6, e6, ber7, e7, ber8, e8, ber9, e9,
+                      textX, textY, label1, label2, label3, label4, label5, label6, label7, label8, label9, label10,
+                      title):
     print("\n")
     print(ber)
     print(ber1)
@@ -39,17 +41,25 @@ def createGraphPareto(ber, e, ber1, e1, ber2, e2, ber3, e3, ber4, e4, textX, tex
     print(e3)
     print(e4)
     plt.plot(1, 0, "ro", label="Sytuacja idealna", color="orange")
-    plt.plot(e, ber, "ro", label=label1, colour="red")
-    plt.plot(e1, ber1, "ro", label=label2, colouur="blue")
+    plt.plot(e, ber, "ro", label=label1, color="red")
+    plt.plot(e1, ber1, "ro", label=label2, color="blue")
     plt.plot(e2, ber2, "ro", label=label3, color="green")
-    plt.plot(e3, ber3, "ro", label=label4, colour="yellow")
-    plt.plot(e4, ber4, "ro", label=label5, colour="black")
+    plt.plot(e3, ber3, "ro", label=label4, color="yellow")
+    plt.plot(e4, ber4, "ro", label=label5, color="black")
+    plt.plot(e5, ber5, "ro", label=label6, color="cyan")
+    plt.plot(e6, ber6, "ro", label=label7, color="gray")
+    plt.plot(e7, ber7, "ro", label=label8, color="magenta")
+    plt.plot(e8, ber8, "ro", label=label9, color="pink")
+    plt.plot(e9, ber9, "ro", label=label10, color="purple")
     plt.title(title)
     plt.xlim(-0.1, 1.1)
     plt.ylim(-0.1, 1.1)
     plt.xlabel(textX)
     plt.ylabel(textY)
     plt.legend()
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.tight_layout()
+    plt.gca().invert_xaxis()
     plt.show()
 
 
@@ -677,7 +687,6 @@ def main():
         framecapacity = int(input("Podaj ilośc bitów w ramce: "))
         messagesize = frameamount * framecapacity
         percent = int(input("Podaj procent przekłamania: "))
-
     if a == 1:
         graph_type = int(input("Wybierz typ grafu:\n 1 - zestałym procentem błędu \n 2 - zestałym rozmiarem ramki\n"))
         if graph_type == 1:
@@ -799,6 +808,16 @@ def main():
         e3 = 0
         ber4 = 0
         e4 = 0
+        ber5 = 0
+        e5 = 0
+        ber6 = 0
+        e6 = 0
+        ber7 = 0
+        e7 = 0
+        ber8 = 0
+        e8 = 0
+        ber9 = 0
+        e9 = 0
         temp = parity_bit_pareto(percent, messagesize, frameamount, framecapacity, ber, e)
         ber = temp[0]
         e = temp[1]
@@ -814,8 +833,28 @@ def main():
         temp = CRC_pareto(3, percent, messagesize, frameamount, framecapacity, ber4, e4)
         ber4 = temp[0]
         e4 = temp[1]
-        createGraphPareto(ber, e, ber1, e1, ber2, e2, ber3, e3, ber4, e4, "Wskaźnik E", "Wskaźnik BER", "Bit parzystości",
-                         "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit", "Wykres BER/E dla różnych kodowań\n Procent przekłamania p = " + str(percent) + "\n "
+
+        temp = parity_bit_pareto(percent, 24, 1, 24, ber5, e5)
+        ber5 = temp[0]
+        e5 = temp[1]
+        temp = CRC_pareto(0, percent, 24, 1, 24, ber6, e6)
+        ber6 = temp[0]
+        e6 = temp[1]
+        temp = CRC_pareto(1, percent, 24, 1, 24, ber7, e7)
+        ber7 = temp[0]
+        e7 = temp[1]
+        temp = CRC_pareto(2, percent, 24, 1, 24, ber8, e8)
+        ber8 = temp[0]
+        e8 = temp[1]
+        temp = CRC_pareto(3, percent, 24, 1, 24, ber9, e9)
+        ber9 = temp[0]
+        e9 = temp[1]
+
+        createGraphPareto(ber, e, ber1, e1, ber2, e2, ber3, e3, ber4, e4, ber5, e5, ber6, e6, ber7, e7, ber8, e8, ber9,
+                          e9, "Wskaźnik E", "Wskaźnik BER", "Bit parzystości 16 bit",
+                         "CRC-8 16 bit", "CRC-16 16 bit", "CRC-32 16 bit", "CRC-64 16 bit",
+                          "Bit parzystości 32 bit", "CRC-8 32 bit", "CRC-16 32 bit", "CRC-32 32 bit", "CRC-64 32 bit",
+                          "Wykres BER/E dla różnych kodowań\n Procent przekłamania p = " + str(percent) + "\n "
                                                                                 "Rozmiar ramki = " + str(framecapacity))
     else:
         print("\nWybrano błędną opcje, program zakończy działanie.")
