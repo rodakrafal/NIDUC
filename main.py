@@ -19,7 +19,7 @@ def createGraph2(par1, par2, textX, textY, par3, par4, par5, par6, label1, label
     plt.plot(par1, par3, label = label2)
     plt.plot(par1, par4, label=label3)
     plt.plot(par1, par5, label=label4)
-    plt.plot(par1, par6, label=label5)
+    # plt.plot(par1, par6, label=label5)
     plt.xlabel(textX)
     plt.ylabel(textY)
     plt.legend()
@@ -60,7 +60,7 @@ def const_size(max_size, percent, frameamount, framecapacity, enlarging):
         j = 0
         incorrectFrames = 0
         messagesize = frameamount * framecapacity
-        while j < 10:
+        while j < 4:
             message = Generator(messagesize)
             message.generate()
 
@@ -106,7 +106,7 @@ def const_percent(max_percent, percent, frameamount, framecapacity, enlarging):
         j = 0
         incorrectFrames = 0
         messagesize = frameamount * framecapacity
-        while j < 10:
+        while j < 4:
             message = Generator(messagesize)
             message.generate()
 
@@ -147,7 +147,7 @@ def const_percent(max_percent, percent, frameamount, framecapacity, enlarging):
 
 def parity_bit_pareto(percent, messagesize, frameamount, framecapacity, ber, e):
     j = 0
-    while j < 10:
+    while j < 4:
         message = Generator(messagesize)
         message.generate()
 
@@ -237,7 +237,7 @@ def ber_parity_bits_const_percent(max_size, percent, frameamount, framecapacity,
         ber = 0
         e = 0
         messagesize = frameamount * framecapacity
-        while j < 10:
+        while j < 4:
             message = Generator(messagesize)
             message.generate()
 
@@ -292,7 +292,7 @@ def ber_parity_bits_const_percent2(max_size, percent, frameamount, framecapacity
         ber = 0
         e = 0
         messagesize = frameamount * framecapacity
-        while j < 10:
+        while j < 4:
             message = Generator(messagesize)
             message.generate()
 
@@ -347,7 +347,7 @@ def ber_parity_bits_const_size(max_percent, percent, frameamount, framecapacity,
         e = 0
         ber = 0
         messagesize = frameamount * framecapacity
-        while j < 10:
+        while j < 4:
             message = Generator(messagesize)
             message.generate()
 
@@ -402,7 +402,7 @@ def ber_parity_bits_const_size2(max_percent, percent, frameamount, framecapacity
         e = 0
         ber = 0
         messagesize = frameamount * framecapacity
-        while j < 10:
+        while j < 4:
             message = Generator(messagesize)
             message.generate()
 
@@ -457,7 +457,7 @@ def CRC_BER_const_percent(max_size, percent, frameamount, framecapacity, enlargi
         ber = 0
         e = 0
         messagesize = frameamount * framecapacity
-        while j < 10:
+        while j < 4:
             message = Generator(messagesize)
             message.generate()
 
@@ -512,7 +512,7 @@ def CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarg
         ber = 0
         e = 0
         messagesize = frameamount * framecapacity
-        while j < 10:
+        while j < 4:
             message = Generator(messagesize)
             message.generate()
 
@@ -713,7 +713,7 @@ def main():
     elif a == 4:
         graph_type = int(input("Wybierz typ grafu:\n 1 - zestałym procentem błędu \n 2 - zestałym rozmiarem ramki\n"))
         if graph_type == 1:
-            choice = int(input("Podaj który kod CRC chcesz wybrać (0-3): "))
+            # choice = int(input("Podaj który kod CRC chcesz wybrać (0-3): "))
             max_size = int(input("Podaj maxymalny rozmiar ramki\n"))
             enlarging = int(input("Podaj o ile bedziemy zwikszać ramke\n"))
             sizeFrame = []
@@ -736,14 +736,19 @@ def main():
                                    eArray2, berArray2, True)
             CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, 2, sizeFrame1,
                                    eArray3, berArray3, True)
-            CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, 3, sizeFrame1,
-                                   eArray4, berArray4, True)
+            # CRC_BER_const_percent2(max_size, percent, frameamount, framecapacity, enlarging, 3, sizeFrame1,
+            #                        eArray4, berArray4, True)
+            # createGraph2(sizeFrame, berArray, "Rozmiar ramki", "Wskaźnik BER", berArray1, berArray2, berArray3, berArray4, "Bit parzystości",
+            #              "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
+            # createGraph2(sizeFrame, eArray, "Rozmiar ramki", "Wskaźnik E", eArray1, eArray2, eArray3, eArray4, "Bit parzystości",
+            #              "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
+
             createGraph2(sizeFrame, berArray, "Rozmiar ramki", "Wskaźnik BER", berArray1, berArray2, berArray3, berArray4, "Bit parzystości",
                          "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
-            createGraph2(sizeFrame, eArray, "Rozmiar ramki", "Wskaźnik E", eArray1, eArray2, eArray3, eArray4, "Bit parzystości",
+            createGraph2(sizeFrame, eArray, "Rozmiar ramki", "Wskaźnik E", eArray1, eArray2, eArray3, berArray4, "Bit parzystości",
                          "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
         if graph_type == 2:
-            choice = int(input("Podaj który kod CRC chcesz wybrać (0-3): "))
+            # choice = int(input("Podaj który kod CRC chcesz wybrać (0-3): "))
             max_percent = int(input("Podaj maxymalny procent zakłamania\n"))
             enlarging = int(input("Podaj o ile procent bedziemy zwikszać przekłamanie\n"))
             percentArray = []
@@ -758,6 +763,7 @@ def main():
             berArray3 = []
             eArray4 = []
             berArray4 = []
+
             ber_parity_bits_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, percentArray,
                                        eArray, berArray, True)
             CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, 0, percentArray1,
@@ -766,8 +772,13 @@ def main():
                                 eArray2, berArray2, True)
             CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, 2, percentArray1,
                                 eArray3, berArray3, True)
-            CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, 3, percentArray1,
-                                eArray4, berArray4, True)
+            # CRC_BER_const_size2(max_percent, percent, frameamount, framecapacity, enlarging, 3, percentArray1,
+            #                     eArray4, berArray4, True)
+
+            # createGraph2(percentArray, berArray, "Procent przekłamania", "Wskaźnik BER", berArray1, berArray2, berArray3, berArray4,
+            #              "Bit parzystości", "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
+            # createGraph2(percentArray, eArray, "Procent przekłamania", "Wskaźnik E", eArray1, eArray2, eArray3, eArray4, "Bit parzystości",
+            #              "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")
 
             createGraph2(percentArray, berArray, "Procent przekłamania", "Wskaźnik BER", berArray1, berArray2, berArray3, berArray4,
                          "Bit parzystości", "CRC 8 bit", "CRC 16 bit", "CRC 32 bit", "CRC 64 bit")

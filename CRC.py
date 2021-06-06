@@ -43,7 +43,7 @@ class CRC:
         if len(strval)%2!=0:
             strval = strval[:2] + "0" + strval[2:]
         convertedval = bytes.fromhex(strval[2:])
-        my_crc = crc.table_driven(convertedval)
+        my_crc = crc.bit_by_bit_fast(convertedval)
         crc_sendFrame = format(my_crc)
         return crc_sendFrame
 
